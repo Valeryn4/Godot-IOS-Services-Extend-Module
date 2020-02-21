@@ -127,13 +127,14 @@ func request_review() :
 	store_kit.request_review()
 ```
 
-### iOS
+***install***
+-------------
+
 - Drop the "iosservicesextend" directory inside the "modules" directory on the Godot source;
 
 Configuring your game
 ---------------------
 
-### iOS
 Follow the [exporting to iOS official documentation](http://docs.godotengine.org/en/stable/learning/workflow/export/exporting_for_ios.html).
 
 
@@ -141,7 +142,7 @@ Follow the [exporting to iOS official documentation](http://docs.godotengine.org
 The following methods are available:
 ```python
 
-
 License
 -------------
 MIT license
+```
