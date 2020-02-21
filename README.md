@@ -19,12 +19,12 @@ Singletons
 ### IAPExtend
 
 **Methods:**
-```gdscript
+```c++
 Error purchase(Variant p_params);
 Error request_product_info(Variant p_params);
 Error restore_purchases();
-int get_pending_event_count(); #Returns the number of pending events on the queue.
-Variant pop_pending_event(); #Pops the first event from the queue and returns it.
+int get_pending_event_count(); //Returns the number of pending events on the queue.
+Variant pop_pending_event(); //Pops the first event from the queue and returns it.
 void finish_transaction(String product_id);
 void set_auto_finish_transaction(bool b);
 void set_auto_purchaces_from_store(bool b);
