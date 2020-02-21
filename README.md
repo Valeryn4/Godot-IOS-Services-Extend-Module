@@ -99,7 +99,7 @@ var in_app_store.request_product_info({ "product_ids": ["my_product1", "my_produ
 ```
 
 responce
-```json
+```
 {
   "type": "product_info",
   "result": "ok",
