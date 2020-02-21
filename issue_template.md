@@ -1,7 +1,7 @@
-**OS target (Android/iOS):**
+**OS target (iOS):**
 
 
-**Godot version:**
+**Godot version:** 3+/2+
 
 
 **Issue description:**
