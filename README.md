@@ -136,8 +136,6 @@ Configuring your game
 Follow the [exporting to iOS official documentation](http://docs.godotengine.org/en/stable/learning/workflow/export/exporting_for_ios.html).
 
 
-API Reference (Android & iOS)
--------------
 
 The following methods are available:
 ```python
