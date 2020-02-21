@@ -6,7 +6,8 @@ This is the IOSServices module for Godot Engine
 - request info
 - [support promouting purchaces](https://developer.apple.com/app-store/promoting-in-app-purchases/) (deferred and now)
 - [support request review](https://developer.apple.com/documentation/storekit/skstorereviewcontroller/2851536-requestreview)
-- restire pyment
+- restore payment
+
 How to use
 ----------
 
