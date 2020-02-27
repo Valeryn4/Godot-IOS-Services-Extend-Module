@@ -38,6 +38,9 @@ void IAPExtend::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("restore_purchases"), &IAPExtend::restore_purchases);
 	ClassDB::bind_method(D_METHOD("purchase"), &IAPExtend::purchase);
 
+	ClassDB::bind_method(D_METHOD("update_promoution_position"), &IAPExtend::update_promoution_position);
+	ClassDB::bind_method(D_METHOD("hide_promotion"), &IAPExtend::hide_promotion);
+
 	ClassDB::bind_method(D_METHOD("get_pending_event_count"), &IAPExtend::get_pending_event_count);
 	ClassDB::bind_method(D_METHOD("pop_pending_event"), &IAPExtend::pop_pending_event);
 	ClassDB::bind_method(D_METHOD("finish_transaction"), &IAPExtend::finish_transaction);
@@ -52,9 +55,83 @@ void IAPExtend::_bind_methods() {
 
 @implementation ProductsDelegateExtend
 
+
+- (void)promoutionSorting: (SKProductsResponse *)response {
+	if (@available(iOS 11.0, *)) {
+		NSArray *products = response.products;
+
+		//update sorting
+		NSMutableArray *products_sorting_mutable = [[NSMutableArray alloc] init];
+
+		List<String>* list_sort_prom = IAPExtend::get_singleton()->_get_sort_promoutin_ptr()
+
+		for (NSUInteger i = 0; i < list_sort_prom->size(); i++) {
+			String sort_pid = (*list_sort_prom)[i];
+			for (NSUInteger z = 0; z < [products count]; z++) {
+				SKProduct *product = [products objectAtIndex:z];
+				String pid = String::utf8([product.productIdentifier UTF8String]);
+				if (sort_pid == pid) {
+					[products_sorting_mutable addObject:product]
+					break;
+				}
+			}
+		}
+		
+		NSArray<SKProduct *>* products_sorting = [[[NSArray alloc] arrayWithArray:products_sorting_mutable] autorelease];
+
+        [[SKProductStorePromotionController defaultController] updateStorePromotionOrder:products_sorting completionHandler:^(NSError * _Nullable error) {
+            if(error != nil) {
+                NSLog(@"Update store promotion order failed with error: %@", [error description]);
+            } else {
+                NSLog(@"Update store promotion Success");
+            }
+        }];
+
+		[products_sorting release];
+	}
+}
+
+- (void)promotionHide: (SKProductsResponse *)response {
+	if (@available(iOS 11.0, *)) {
+		NSArray *products = response.products;
+
+		//update sorting
+		NSMutableArray *products_hide_mutable = [[NSMutableArray alloc] init];
+
+		for (NSUInteger z = 0; z < [products count]; z++) {
+			SKProduct *product = [products objectAtIndex:z];
+			String pid = String::utf8([product.productIdentifier UTF8String]);
+			if (IAPExtend::get_singleton()->_has_hide_promouting(pid)) {
+				[products_hide_mutable addObject:product]
+				break;
+			}
+		}
+		
+		NSArray<SKProduct *>* products_hide = [[[NSArray alloc] arrayWithArray:products_hide_mutable] autorelease];
+
+		[[SKProductStorePromotionController defaultController] fetchStorePromotionOrderWithCompletionHandler:^(NSArray<SKProduct *> * _Nonnull products_hide, NSError * _Nullable error) {
+            if(error != nil) {
+                NSLog(@"Fetch store promotion order failed with error: %@", [error description]);
+            } else {
+                NSMutableString* productIds = [NSMutableString string];
+                for (SKProduct* product in products_hide) {
+                    [productIds appendString:product.productIdentifier];
+                    [productIds appendString:@"; "];
+                }
+                NSLog(@"Got promotion order: %@", productIds);
+            }
+        }];
+
+		[products_hide_mutable release];
+	}
+}
+
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
 
-	NSArray *products = response.products;
+	[self promoutionSorting:response];
+	[self promotionHide:response];
+
+	NSArray *products = response.products;	
 	Dictionary ret;
 	ret["type"] = "product_info";
 	ret["result"] = "ok";
@@ -264,6 +341,81 @@ Error IAPExtend::purchase(Variant p_params) {
 	return OK;
 };
 
+Error IAPExtend::update_promoution_position(Variant p_array_id) {
+	if (!(@available(iOS 11.0, *))) {
+		return ERR_UNAVAILABLE;
+	}
+
+	Dictionary params = p_params;
+	if (!params.has("product_ids")) {
+		return ERR_INVALID_PARAMETER;
+	}
+
+	PoolStringArray pids = params["product_ids"];
+	printf("************ resort promotion product! %i\n", pids.size());
+
+	update_promoution_position.clear();
+	NSMutableArray *array = [[[NSMutableArray alloc] initWithCapacity:pids.size()] autorelease];
+	for (int i = 0; i < pids.size(); i++) {
+		printf("******** adding %ls to resort promotion product  list\n", pids[i].c_str());
+		
+
+		update_promoution_position.push_back(pids[i]);
+
+		NSString *pid = [[[NSString alloc] initWithUTF8String:pids[i].utf8().get_data()] autorelease];
+		[array addObject:pid];
+	};
+
+	NSSet *products = [[[NSSet alloc] initWithArray:array] autorelease];
+	SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:products];
+
+	ProductsDelegateExtend *delegate = [[ProductsDelegateExtend alloc] init];
+
+	request.delegate = delegate;
+	[request start];
+
+	return OK;
+	
+}
+
+Error IAPExtend::hide_promotion(Variant p_array_id) {
+	if !(@available(iOS 11.0, *)) {
+		return ERR_UNAVAILABLE;
+	}
+
+	Dictionary params = p_params;
+	if (!params.has("product_ids")) {
+		return ERR_INVALID_PARAMETER;
+	}
+
+	PoolStringArray pids = params["product_ids"];
+	printf("************ hide promotion product! %i\n", pids.size());
+
+	hide_promotion.clear();
+	NSMutableArray *array = [[[NSMutableArray alloc] initWithCapacity:pids.size()] autorelease];
+	for (int i = 0; i < pids.size(); i++) {
+		printf("******** adding %ls to hide promotion product  list\n", pids[i].c_str());
+		
+		hide_promotion.push_back(pids[i]);
+
+
+		NSString *pid = [[[NSString alloc] initWithUTF8String:pids[i].utf8().get_data()] autorelease];
+		[array addObject:pid];
+
+		
+	};
+
+	NSSet *products = [[[NSSet alloc] initWithArray:array] autorelease];
+	SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:products];
+
+	ProductsDelegateExtend *delegate = [[ProductsDelegateExtend alloc] init];
+
+	request.delegate = delegate;
+	[request start];
+
+	return OK;
+}
+
 int IAPExtend::get_pending_event_count() {
 	return pending_events.size();
 };
@@ -275,6 +427,8 @@ Variant IAPExtend::pop_pending_event() {
 
 	return front;
 };
+
+
 
 void IAPExtend::_post_event(Variant p_event) {
 
@@ -312,6 +466,18 @@ void IAPExtend::finish_transaction(String product_id) {
 		[pending_transactions_iap removeObjectForKey:prod_id];
 	}
 };
+
+bool IAPExtend::_has_sort_promouting(String product_id) {
+	return position_promotion.find(product_id) != NULL;
+}
+
+List<String>* IAPExtend::_get_sort_promoutin_ptr() {
+	return &position_promotion;
+}
+
+bool IAPExtend::_has_hide_promouting(String product_id) {
+	return hide_promotion.find(product_id) != NULL;
+}
 
 void IAPExtend::set_auto_finish_transaction(bool b) {
 	auto_finish_transactions_iap = b;
