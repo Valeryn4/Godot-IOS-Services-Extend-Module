@@ -3,10 +3,8 @@ Import('env')
 
 sources = [
            'register_types.cpp',
-           'ios/src/godotAdmob.mm',
-           'ios/src/AdmobBanner.mm',
-           'ios/src/AdmobInterstitial.mm',
-           'ios/src/AdmobRewarded.mm'
+           'ios/src/SKExtend.mm',
+           'ios/src/IAPExtend.mm'
            ]
 
 if (env["platform"] == "iphone"):

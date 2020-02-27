@@ -15,7 +15,7 @@ class SKExtend : public Reference {
 #endif
 
     bool initialized;
-    SKExtend *instance;
+    static SKExtend *instance;
 
 protected:
     static void _bind_methods();
@@ -23,7 +23,8 @@ protected:
 public:
     Error request_review();
     
-
+    static SKExtend *get_singleton();
+    
     SKExtend();
     ~SKExtend();
 };

@@ -17,7 +17,7 @@ class IAPExtend : public Reference {
 #endif
 
     bool initialized;
-    IAPExtend *instance;
+    static IAPExtend *instance;
     
     
     List<Variant> pending_events;
@@ -40,7 +40,8 @@ public:
     void _post_event(Variant p_event);
     void _record_purchase(String product_id);
     
-
+    static IAPExtend *get_singleton();
+    
     IAPExtend();
     ~IAPExtend();
 };

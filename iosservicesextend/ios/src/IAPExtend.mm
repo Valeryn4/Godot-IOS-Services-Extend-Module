@@ -289,6 +289,11 @@ void IAPExtend::_record_purchase(String product_id) {
 	[[NSUserDefaults standardUserDefaults] synchronize];
 };
 
+IAPExtend *IAPExtend::get_singleton() {
+    
+    return instance;
+};
+
 IAPExtend::IAPExtend() {
 	ERR_FAIL_COND(instance != NULL);
 	instance = this;

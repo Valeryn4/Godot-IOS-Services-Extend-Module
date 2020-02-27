@@ -12,7 +12,7 @@
 #include "ios/src/IAPExtend.h"
 #include "ios/src/SKExtend.h"
 
-void register_admob_types() {
+void register_iosservicesextend_types() {
 #if VERSION_MAJOR == 3
     Engine::get_singleton()->add_singleton(Engine::Singleton("IAPExtend", memnew(IAPExtend)));
     Engine::get_singleton()->add_singleton(Engine::Singleton("SKExtend", memnew(SKExtend)));
@@ -22,5 +22,5 @@ void register_admob_types() {
 #endif
 }
 
-void unregister_admob_types() {
+void unregister_iosservicesextend_types() {
 }

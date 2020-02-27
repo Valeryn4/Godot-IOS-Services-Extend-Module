@@ -6,10 +6,10 @@ extern "C" {
 #import <StoreKit/StoreKit.h>
 };
 
-SKExtend *IAPExtend::instance = NULL;
+SKExtend *SKExtend::instance = NULL;
 
 void SKExtend::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("request_review"), &IAPExtend::request_review);
+	ClassDB::bind_method(D_METHOD("request_review"), &SKExtend::request_review);
 };
 
 Error SKExtend::request_review() {
@@ -17,6 +17,11 @@ Error SKExtend::request_review() {
         [SKStoreReviewController requestReview] ;
     }
     return OK;
+};
+
+SKExtend *SKExtend::get_singleton() {
+    
+    return instance;
 };
 
 SKExtend::SKExtend() {
