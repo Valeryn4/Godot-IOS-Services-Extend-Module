@@ -28,6 +28,9 @@ Variant pop_pending_event(); //Pops the first event from the queue and returns i
 void finish_transaction(String product_id);
 void set_auto_finish_transaction(bool b);
 void set_auto_purchaces_from_store(bool b);
+Error update_promoution_position(Variant p_array_id); //sort promotion 
+Error hide_promotion(Variant p_array_id); //hide promotion
+
 ```
 
 ***examples:***
@@ -47,6 +50,12 @@ in_app_store.finish_transaction("product_id") #finished transaction force
 ```gdscript
 
 var in_app_store = Engine.get_singleton("IAPExtend")
+
+func _ready() :
+    #sort promotion on app store item. Gold -> Silver -> ...
+    in_app_store.update_promoution_position({"product_ids":["gold.coin.big", "silver.coin.big"]}) 
+    #hide promotion on app store.
+    in_app_store.hide_promotion({"product_ids":["gold.key.chest"])
 
 func on_purchase_pressed():
     var result = in_app_store.purchase( { "product_id": "my_product" } )
@@ -113,6 +122,27 @@ responce
 }
 ```
 
+***update_promoution_position***
+```
+    #Personal sorting promotion product on this device
+    in_app_store.update_promoution_position({"product_ids":["gold.coin.big", "premium.30days"]}) 
+```
+BEFORE:
+![img](https://habrastorage.org/web/319/f9a/fd6/319f9afd6e3643d69b28b39f8139afb7.jpeg)
+RESULT:
+![img](https://habrastorage.org/web/dcc/915/b82/dcc915b8243e46c59f637347e98b1c0e.jpeg)
+
+
+***hide_promotion***
+```
+    #Personal hide promotion product on this device
+    in_app_store.hide_promotion({"product_ids":["gold.coin.big"])
+```
+BEFORE:
+![img](https://habrastorage.org/web/319/f9a/fd6/319f9afd6e3643d69b28b39f8139afb7.jpeg)
+RESULT:
+![img](https://habrastorage.org/web/55e/261/3c3/55e2613c3333455489c65447d8fd7416.jpeg)
+
 
 ### SKExtend
 
@@ -139,7 +169,14 @@ Follow the [exporting to iOS official documentation](http://docs.godotengine.org
 
 
 
-The following methods are available:
+***HELP US***
+-------------
+Help me, I am very bad in "Objective-C".
+There may be errors.
+
+
+
+
 ```python
 
 License
