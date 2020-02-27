@@ -1,4 +1,4 @@
-IOS Services extend module
+IOS Services extend module on Godot Engine
 =====
 This is the IOSServices module for Godot Engine 
 - iOS
