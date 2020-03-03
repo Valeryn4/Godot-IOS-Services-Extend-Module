@@ -1,12 +1,12 @@
 
 Import('env')
+Import('env_modules')
 
-sources = [
-           'register_types.cpp',
-           'ios/src/SKExtend.mm',
-           'ios/src/IAPExtend.mm'
-           ]
+
+env_iosservext = env_modules.Clone()
 
 if (env["platform"] == "iphone"):
-    env.add_source_files(env.modules_sources, sources)
-
+   modules_iosservext_sources = []
+   env_iosservext.add_source_files(modules_iosservext_sources, "*.cpp")
+   env_iosservext.add_source_files(modules_iosservext_sources, "ios/src/*.mm")
+   mod_lib = env_modules.add_library('#bin/libgodot_iosservext_module' + env['LIBSUFFIX'], modules_iosservext_sources)
