@@ -21,7 +21,8 @@ class IAPExtend : public Reference {
     
     
     List<Variant> pending_events;
-    
+    List<String> hide_promotion;
+    List<String> position_promotion;
 
 protected:
     static void _bind_methods();
@@ -31,6 +32,10 @@ public:
     Error restore_purchases();
     Error purchase(Variant p_params);
 
+    Error update_promoution_position(Variant p_array_id);
+    Error hide_promotion(Variant p_array_id);
+
+
     int get_pending_event_count();
     Variant pop_pending_event();
     void finish_transaction(String product_id);
@@ -39,6 +44,10 @@ public:
 
     void _post_event(Variant p_event);
     void _record_purchase(String product_id);
+
+    bool _has_sort_promouting(String product_id);
+    List<String>* _get_sort_promoutin_ptr();
+    bool _has_hide_promouting(String product_id);
     
     static IAPExtend *get_singleton();
     
